@@ -78,7 +78,7 @@ public class Tower : MonoBehaviour
             //coroutine용 반환기
             yield return null;
             //시간이 경과한다
-            currentTime += Time.deltaTime;
+            currentTime += Time.unscaledDeltaTime;
             //경과하는 시간에 따라 점점 alpha 값은 0으로 투명해진다
             float targetAlpha = (1 - (currentTime / hitTime)) * originDamageAlpha ;
             //투명해진 색상을 image에 반영
@@ -104,9 +104,10 @@ public class Tower : MonoBehaviour
             StopAllCoroutines ();
             StartCoroutine(Damage());
             //Hp가 0이면
-            if (currentHp < 1)
+            if (currentHp < 1 && !GameManager.Instance.IsGaneEnd)
             {
                 print("게임종료");
+                GameManager.Instance.GameOver();
             }
         }
     }

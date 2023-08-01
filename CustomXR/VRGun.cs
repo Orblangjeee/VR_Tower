@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 //역할 : XR Controller 입력에 의해서 총구가 향하는 방향으로 총알 발사
@@ -22,6 +21,7 @@ public class VRGun : MonoBehaviour
     public float rayDistance = 200f; //VR Gun의 사정거리
     private Vector3 originSize; //CrossHair 의 원래 사이즈
     public float adjustScale = 0.1f; //거리에 따라 일정하게 보일 수 있도록 하는 보정값
+    public int damage = 1;
 
     public Transform firePos; //총구(FirePos)
     public ParticleSystem impactEffect; //총알 부딪힐 때 Effect
@@ -93,6 +93,25 @@ public class VRGun : MonoBehaviour
         //Ray를 발사해서 부딪힌 경우?
         if (IsHit(out hitInfo))
         {
+            //피격 대상의 HP를 damage 만큼 닳게 한다.
+            //레이어로 체크
+            if (hitInfo.collider.gameObject.layer.Equals( LayerMask.NameToLayer("Enemy"))) 
+            {
+                //가지고 있는 컴포넌트로 체크
+                IDamaged enemy = hitInfo.collider.GetComponent<IDamaged>();
+                if (enemy != null)
+                {
+                    enemy.DamagedProcess(damage);
+                }
+                /* 태그로 체크
+                //Enemy의 HP를 damage(-1) 닳게 한다
+                if (hitInfo.collider.CompareTag("Enemy"))
+                {
+                    hitInfo.collider.GetComponent<Enemy>().DamagedProcess(1);
+                } 
+                */
+               
+            }
 
             //부딪힌 위치에서 총알 부딪힌 효과 재생
             PlayImpactEffect(hitInfo);

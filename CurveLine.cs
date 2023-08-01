@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+
 using UnityEngine;
-using UnityEngine.Windows.Speech;
+
 
 //역할 : hand 곡선 형태의 LineRender 를 그리고 Line이 부딪힌 곳에 대한 정보를 가져온다
 // LineRenderer, PlayerHand, 곡선의 거리( Far ), 곡선의 높낮이 (down), 곡선의 점 개수, Bezier 커브를 그리기 위한 기준점(P0, P1,P2)

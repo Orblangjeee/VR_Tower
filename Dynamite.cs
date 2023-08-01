@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 //역할 : 어딘가에 부딪혔을 때 폭발시키며 주위 물체들을 날려버린다
 //1. 폭발 범위 
@@ -62,13 +63,30 @@ public class Dynamite : MonoBehaviour
         if (hits != null && hits.Length > 0) 
         {
             for (int i = 0; i < hits.Length; i++) //3. 범위 안 각 물체들에게 폭발 힘을 전달 (반복)
-            {   //3-1. 물체들이 Rigidbody 가지고 있는지 확인
-                Rigidbody rb = hits[i].GetComponent<Rigidbody>();
-                if(rb != null)  //3-2. Rigidbody 를 가지고 있다면?
+            {   
+                //A. 부딪힌 물체들 중에 Enemy가 있다면 Enemy들은 폭파시킨다.
+                if (hits[i].gameObject.layer.Equals(LayerMask.NameToLayer("Enemy")))
                 {
-                    rb.AddExplosionForce(expForce, transform.position, expRange, liftForce, ForceMode.Impulse); //(폭발세기, 폭발위치, 폭발범위, 위로뜨게하는 힘, ForceMode)
-                    //4. 폭발! :폭발 위치(나의 위치) 기준으로 범위/세기(exp/lift)
+                    Vector3 enemyPos = hits[i].transform.position;
+                    // - Enemy들의 위치에 폭사효과 Effect 재생
+                    FindObjectOfType<DynamiteEffectPool>().UseDynamiteEffects(enemyPos);
+                    // - Enemy들을 모두 제거한다.
+                    //Destroy(hits[i].gameObject);
+                    EnemyCreator.Instance.DeactiveEnemy(hits[i].gameObject);
                 }
+                //B. 부딪힌 물체가 Enemy가 아닐 경우
+                else
+                {
+                    //3-1. 물체들이 Rigidbody 가지고 있는지 확인
+                    Rigidbody rb = hits[i].GetComponent<Rigidbody>();
+                    if (rb != null)  //3-2. Rigidbody 를 가지고 있다면?
+                    {
+                        //4. 폭발! :폭발 위치(나의 위치) 기준으로 범위/세기(exp/lift)
+                        rb.AddExplosionForce(expForce, transform.position, expRange, liftForce, ForceMode.Impulse); //(폭발세기, 폭발위치, 폭발범위, 위로뜨게하는 힘, ForceMode)
+                                                                                                                    
+                    }
+                }
+               
             }
         }
         
